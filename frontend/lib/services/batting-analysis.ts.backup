@@ -1,0 +1,100 @@
+import supabaseAdmin from "../supabase/admin";
+
+export interface BattingAnalysisPlayer {
+  id: number;
+  player: string;
+  span: string;
+  mat: number;
+  runs: number;
+  avg: number;
+  sr: number;
+  fours: number;
+  sixes: number;
+  start_year: number;
+  end_year: number;
+  career_length: number;
+  "Predicted_Category": string;
+}
+
+export interface NearestPlayer {
+  player: string;
+  avg: number;
+  sr: number;
+  runs: number;
+  mat: number;
+  distance: number; // Euclidean distance from current player
+}
+
+export class BattingAnalysisService {
+  static async fetchNearestPlayers(
+    currentPlayerAvg: number,
+    currentPlayerSr: number,
+    limit: number = 20
+  ): Promise<NearestPlayer[]> {
+    try {
+      console.log(`Fetching nearest players for avg: ${currentPlayerAvg}, sr: ${currentPlayerSr}`);
+
+      // First, let's check how many total records we have
+      const { count: totalCount } = await supabaseAdmin()
+        .from("batting_analysis")
+        .select("*", { count: "exact", head: true });
+
+      console.log(`Total batting analysis records: ${totalCount}`);
+
+      // Fetch all batting analysis data
+      const { data, error } = await supabaseAdmin()
+        .from("batting_analysis")
+        .select("*")
+        .not("avg", "is", null)
+        .not("sr", "is", null)
+        .not("player", "is", null)
+        .limit(1000);
+
+      if (error) {
+        console.error("Error fetching batting analysis data:", error);
+        throw new Error(`Failed to fetch batting data: ${error.message}`);
+      }
+
+      console.log(`Raw batting data length: ${data?.length || 0}`);
+
+      if (!data || data.length === 0) {
+        return [];
+      }
+
+      // Calculate Euclidean distance for each player from current player
+      const playersWithDistance = data
+        .filter((player: BattingAnalysisPlayer) =>
+          player.player &&
+          player.avg !== null &&
+          player.sr !== null &&
+          !isNaN(player.avg) &&
+          !isNaN(player.sr)
+        )
+        .map((player: BattingAnalysisPlayer) => {
+          // Calculate Euclidean distance: sqrt((avg_diff)^2 + (sr_diff)^2)
+          const avgDiff = player.avg - currentPlayerAvg;
+          const srDiff = player.sr - currentPlayerSr;
+          const distance = Math.sqrt(avgDiff * avgDiff + srDiff * srDiff);
+
+          return {
+            player: player.player,
+            avg: player.avg,
+            sr: player.sr,
+            runs: player.runs,
+            mat: player.mat,
+            distance: distance
+          };
+        })
+        .sort((a, b) => a.distance - b.distance) // Sort by distance (closest first)
+        .slice(0, limit); // Take top 20 closest players
+
+      console.log(`Found ${playersWithDistance.length} nearest players`);
+      console.log("Nearest players:", playersWithDistance.slice(0, 5));
+
+      return playersWithDistance;
+    } catch (error) {
+      console.error("Error in fetchNearestPlayers:", error);
+      throw error;
+    }
+}
+  }
