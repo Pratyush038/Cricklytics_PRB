@@ -59,7 +59,7 @@ export class BattingAnalysisService {
     try {
       console.log('Calling backend for batting prediction:', batsmanData);
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/predict/batsman`, {
+      const response = await fetch(`${process.env.BACKEND_URL || 'http://localhost:8000'}/predict/batsman`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

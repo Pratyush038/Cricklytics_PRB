@@ -54,7 +54,7 @@ export class BowlingAnalysisService {
     try {
       console.log('Calling backend for bowling prediction:', bowlerData);
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/predict/bowler`, {
+      const response = await fetch(`${process.env.BACKEND_URL || 'http://localhost:8000'}/predict/bowler`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
