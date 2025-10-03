@@ -7,6 +7,7 @@ import { ScatterPlotChart } from '@/components/player-analysis/scatter-plot-char
 import { BowlingScatterPlotChart } from '@/components/player-analysis/bowling-scatter-plot-chart';
 import { PredictionResult } from '@/components/player-analysis/prediction-result';
 import { PlayerStatsCard } from '@/components/player-analysis/player-stats-card';
+import { GeminiAnalysis } from '@/components/player-analysis/gemini-analysis';
 import { BattingAnalysisService } from '../../lib/services/batting-analysis';
 import { BowlingAnalysisService } from '../../lib/services/bowling-analysis';
 
@@ -104,7 +105,15 @@ export const PlayerVisualization: React.FC<PlayerVisualizationProps> = ({
         playerType={playerType}
       />
 
-      {/* PLAYER STATS - SECOND */}
+      {/* GEMINI ANALYSIS - SECOND */}
+      <GeminiAnalysis 
+        result={result}
+        playerType={playerType}
+        playerStats={playerStats}
+        playerName={playerName}
+      />
+
+      {/* PLAYER STATS - THIRD */}
       <PlayerStatsCard
         playerName={playerName}
         playerType={playerType}

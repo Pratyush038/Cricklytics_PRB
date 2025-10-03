@@ -4,9 +4,6 @@ import { toolRegistry, ToolKey } from '@/app/chat/config/tool-registry';
 import { AgentConfig, defaultAgentConfig } from '@/app/chat/config/agent-config';
 
 
-
-
-
 import { myProvider } from '@/app/chat/lib/ai/providers/providers';
 import { getUser } from '@/app/chat/hooks/get-user';
 

@@ -13,7 +13,6 @@ export const toolRegistry = {
   querySupabase: querySupabaseTool,
   tavilySearch: tavilySearchTool,
   generateChart: generateChart,
-  ragRetrieval: ragRetrievalTool,
   generateImage: generateImageTool,
 } as const;
 

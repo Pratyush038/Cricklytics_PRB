@@ -55,8 +55,8 @@ const Icons: IconType = {
     user: User,
     home: Home,
     bug: Bug,
-    leaf: Leaf
-    
+    leaf: Leaf,
+    chat: MessageCircle
 }
 
 export default Icons;

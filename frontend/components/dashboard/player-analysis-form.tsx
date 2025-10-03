@@ -32,12 +32,13 @@ interface PlayerAnalysisFormProps {
   onSubmit: (data: any) => void;
 }
 
-const PlayerAnalysisForm = () => {
+const PlayerAnalysisForm: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   type PlayerType = 'batsman' | 'bowler';
   const [activeTab, setActiveTab] = useState<PlayerType>('batsman');
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
-  const [formState, setFormState] = useState<FormState>({
+  
+  const initialFormState: FormState = {
     player: '',
     mat: 45,
     runs: 1500,
@@ -47,39 +48,43 @@ const PlayerAnalysisForm = () => {
     sixes: 15,
     start_year: 2020,
     end_year: 2025
-  });
+  };
+  
+  const [submittedState, setSubmittedState] = useState<FormState>(initialFormState);
+  const [localFormState, setLocalFormState] = useState<FormState>(initialFormState);
 
   const handleTabChange = (value: PlayerType) => {
     setActiveTab(value);
     // Reset form state based on player type
-    if (value === 'batsman') {
-      setFormState({
-        ...formState,
-        runs: 1500,
-        sr: 135.00,
-        avg: 35.00,
-        fours: 0,
-        sixes: 0,
-        wickets: undefined,
-        econ: undefined,
-      });
-    } else {
-      setFormState({
-        ...formState,
-        wickets: 75,
-        econ: 4.50,
-        sr: 20.00,
-        runs: undefined,
-        avg: undefined,
-        fours: undefined,
-        sixes: undefined,
-      });
-    }
+    const newState = value === 'batsman' 
+      ? {
+          ...localFormState,
+          runs: 1500,
+          sr: 135.00,
+          avg: 35.00,
+          fours: 0,
+          sixes: 0,
+          wickets: undefined,
+          econ: undefined,
+        }
+      : {
+          ...localFormState,
+          wickets: 75,
+          econ: 4.50,
+          sr: 20.00,
+          runs: undefined,
+          avg: undefined,
+          fours: undefined,
+          sixes: undefined,
+        };
+    
+    setLocalFormState(newState);
+    setSubmittedState(newState);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value, type } = e.target;
-    setFormState(prev => ({
+    setLocalFormState(prev => ({
       ...prev,
       [id]: type === 'number' ? (value === '' ? '' : Number(value)) : value
     }));
@@ -98,7 +103,7 @@ const PlayerAnalysisForm = () => {
         },
         body: JSON.stringify({
           playerType: activeTab,
-          ...formState,
+          ...localFormState,
         }),
       });
 
@@ -109,6 +114,7 @@ const PlayerAnalysisForm = () => {
       }
 
       setAnalysisResult(data);
+      setSubmittedState(localFormState);
       toast.success('Analysis completed successfully');
       
     } catch (error) {
@@ -121,29 +127,31 @@ const PlayerAnalysisForm = () => {
   };
 
   const handleClear = () => {
-    if (activeTab === 'batsman') {
-      setFormState({
-        player: '',
-        mat: 50,
-        runs: 1500,
-        sr: 135.00,
-        avg: 35.00,
-        fours: 0,
-        sixes: 0,
-        start_year: 2010,
-        end_year: 2025
-      });
-    } else {
-      setFormState({
-        player: '',
-        mat: 50,
-        wickets: 75,
-        econ: 4.50,
-        sr: 20.00,
-        start_year: 2010,
-        end_year: 2025
-      });
-    }
+    const newState = activeTab === 'batsman' 
+      ? {
+          player: '',
+          mat: 50,
+          runs: 1500,
+          sr: 135.00,
+          avg: 35.00,
+          fours: 0,
+          sixes: 0,
+          start_year: 2010,
+          end_year: 2025
+        }
+      : {
+          player: '',
+          mat: 50,
+          wickets: 75,
+          econ: 4.50,
+          sr: 20.00,
+          start_year: 2010,
+          end_year: 2025
+        };
+    
+    setLocalFormState(newState);
+    setSubmittedState(newState);
+    setAnalysisResult(null);
   };
 
   return (
@@ -151,6 +159,9 @@ const PlayerAnalysisForm = () => {
       <Card className="p-6">
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Player Category Tabs */}
+          {/* Player Name */}
+          
+
           <Tabs 
             value={activeTab} 
             onValueChange={(value) => handleTabChange(value as PlayerType)}
@@ -160,25 +171,24 @@ const PlayerAnalysisForm = () => {
               <TabsTrigger value="batsman">Batsman</TabsTrigger>
               <TabsTrigger value="bowler">Bowler</TabsTrigger>
             </TabsList>
-
-            {/* Player Name */}
-            <div className="space-y-2 pt-12">
-              <Label htmlFor="player">Player Name</Label>
-              <Input 
-                id="player" 
-                type="text"
-                placeholder="Enter player name"
-                value={formState.player}
-                onChange={handleInputChange} />
-            </div>
             <TabsContent value="batsman">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
+                <div className="space-y-2 col-span-2">
+                  <Label htmlFor="player">Player Name</Label>
+                  <Input 
+                    id="player" 
+                    type="text"
+                    placeholder="Enter player name"
+                    value={localFormState.player}
+                    onChange={handleInputChange} 
+                  />
+                </div>
                 <div className="space-y-2">
                   <Label htmlFor="mat">Matches Played</Label>
                   <Input
                     id="mat"
                     type="number"
-                    value={formState.mat}
+                    value={localFormState.mat}
                     onChange={handleInputChange}
                     className="w-full"
                   />
@@ -188,7 +198,7 @@ const PlayerAnalysisForm = () => {
                   <Input
                     id="runs"
                     type="number"
-                    value={formState.runs}
+                    value={localFormState.runs}
                     onChange={handleInputChange}
                     className="w-full"
                   />
@@ -198,7 +208,7 @@ const PlayerAnalysisForm = () => {
                   <Input
                     id="avg"
                     type="number"
-                    value={formState.avg}
+                    value={localFormState.avg}
                     onChange={handleInputChange}
                     step="0.01"
                     className="w-full"
@@ -209,7 +219,7 @@ const PlayerAnalysisForm = () => {
                   <Input
                     id="sr"
                     type="number"
-                    value={formState.sr}
+                    value={localFormState.sr}
                     onChange={handleInputChange}
                     step="0.01"
                     className="w-full"
@@ -220,7 +230,7 @@ const PlayerAnalysisForm = () => {
                   <Input
                     id="fours"
                     type="number"
-                    value={formState.fours}
+                    value={localFormState.fours}
                     onChange={handleInputChange}
                     className="w-full"
                   />
@@ -230,7 +240,7 @@ const PlayerAnalysisForm = () => {
                   <Input
                     id="sixes"
                     type="number"
-                    value={formState.sixes}
+                    value={localFormState.sixes}
                     onChange={handleInputChange}
                     className="w-full"
                   />
@@ -240,7 +250,7 @@ const PlayerAnalysisForm = () => {
                   <Input
                     id="start_year"
                     type="number"
-                    value={formState.start_year}
+                    value={localFormState.start_year}
                     onChange={handleInputChange}
                     className="w-full"
                   />
@@ -250,7 +260,7 @@ const PlayerAnalysisForm = () => {
                   <Input
                     id="end_year"
                     type="number"
-                    value={formState.end_year}
+                    value={localFormState.end_year}
                     onChange={handleInputChange}
                     className="w-full"
                   />
@@ -260,12 +270,22 @@ const PlayerAnalysisForm = () => {
 
             <TabsContent value="bowler">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
+                <div className="space-y-2 col-span-2">
+                  <Label htmlFor="player">Player Name</Label>
+                  <Input 
+                    id="player" 
+                    type="text"
+                    placeholder="Enter player name"
+                    value={localFormState.player}
+                    onChange={handleInputChange} 
+                  />
+                </div>
                 <div className="space-y-2">
                   <Label htmlFor="mat">Matches Played</Label>
                   <Input
                     id="mat"
                     type="number"
-                    value={formState.mat}
+                    value={localFormState.mat}
                     onChange={handleInputChange}
                     className="w-full"
                   />
@@ -275,7 +295,7 @@ const PlayerAnalysisForm = () => {
                   <Input
                     id="wickets"
                     type="number"
-                    value={formState.wickets}
+                    value={localFormState.wickets}
                     onChange={handleInputChange}
                     className="w-full"
                   />
@@ -285,7 +305,7 @@ const PlayerAnalysisForm = () => {
                   <Input
                     id="econ"
                     type="number"
-                    value={formState.econ}
+                    value={localFormState.econ}
                     onChange={handleInputChange}
                     step="0.01"
                     className="w-full"
@@ -296,7 +316,7 @@ const PlayerAnalysisForm = () => {
                   <Input
                     id="sr"
                     type="number"
-                    value={formState.sr}
+                    value={localFormState.sr}
                     onChange={handleInputChange}
                     step="0.01"
                     className="w-full"
@@ -307,7 +327,7 @@ const PlayerAnalysisForm = () => {
                   <Input
                     id="start_year"
                     type="number"
-                    value={formState.start_year}
+                    value={localFormState.start_year}
                     onChange={handleInputChange}
                     className="w-full"
                   />
@@ -317,7 +337,7 @@ const PlayerAnalysisForm = () => {
                   <Input
                     id="end_year"
                     type="number"
-                    value={formState.end_year}
+                    value={localFormState.end_year}
                     onChange={handleInputChange}
                     className="w-full"
                   />
@@ -327,7 +347,7 @@ const PlayerAnalysisForm = () => {
           </Tabs>
 
           {/* Action Buttons */}
-          <div className="flex justify-end space-x-4">
+          <div className="flex justify-end space-x-4 mt-6">
             <Button 
               variant="outline" 
               type="button"
@@ -343,24 +363,23 @@ const PlayerAnalysisForm = () => {
             </Button>
           </div>
         </form>
-
       </Card>
 
       {/* Analysis Results */}
       {analysisResult && (
         <AnalysisResults
           result={analysisResult}
-          playerName={formState.player}
+          playerName={submittedState.player}
           playerType={activeTab}
           playerStats={{
-            sr: formState.sr,
-            ...(activeTab === 'batsman' ? { avg: formState.avg } : {}),
-            mat: formState.mat,
-            runs: formState.runs,
-            wickets: formState.wickets,
-            econ: formState.econ,
-            fours: formState.fours,
-            sixes: formState.sixes,
+            sr: submittedState.sr,
+            ...(activeTab === 'batsman' ? { avg: submittedState.avg } : {}),
+            mat: submittedState.mat,
+            runs: submittedState.runs,
+            wickets: submittedState.wickets,
+            econ: submittedState.econ,
+            fours: submittedState.fours,
+            sixes: submittedState.sixes,
           }}
         />
       )}

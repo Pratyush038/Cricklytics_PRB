@@ -20,6 +20,11 @@ const sidebarConfig: SidebarConfig = {
           title: "Injury Prediction",
           href: "/injury-prediction",
           icon: Icons.shield
+        },
+        {
+          title: "Chat",
+          href: "/chat",
+          icon: Icons.chat
         }
       ]
     },

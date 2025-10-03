@@ -437,10 +437,10 @@ export function PlayerStatsCard({
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1.1, duration: 0.4 }}
               >
-                {playerType === 'batsman'
+                {/* {playerType === 'batsman'
                   ? `${playerName} demonstrates exceptional batting prowess with a strike rate of ${stats.sr?.toFixed(2)} and an impressive average of ${stats.avg?.toFixed(2)} across ${stats.mat || 0} matches.`
                   : `${playerName} showcases outstanding bowling skills, securing ${stats.wickets || 0} wickets with remarkable economy rate of ${stats.econ?.toFixed(2)} and strike rate of ${stats.sr?.toFixed(2)}.`
-                }
+                } */}
               </motion.p>
             </motion.div>
           </CardContent>
