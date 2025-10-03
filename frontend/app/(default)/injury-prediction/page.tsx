@@ -52,6 +52,40 @@ export default function InjuryPredictionPage() {
     }
   }, []);
 
+  // Helper function to calculate date ranges based on time range
+  const calculateDateRange = (timeRange: string) => {
+    const end = new Date();
+    const start = new Date();
+
+    switch (timeRange) {
+      case "7d":
+        start.setDate(start.getDate() - 7);
+        break;
+      case "14d":
+        start.setDate(start.getDate() - 14);
+        break;
+      case "30d":
+        start.setDate(start.getDate() - 30);
+        break;
+      case "90d": // 3 months
+        start.setMonth(start.getMonth() - 3);
+        break;
+      case "180d": // 6 months
+        start.setMonth(start.getMonth() - 6);
+        break;
+      case "365d": // 1 year
+        start.setFullYear(start.getFullYear() - 1);
+        break;
+      default:
+        start.setDate(start.getDate() - 30); // Default to 30 days
+    }
+
+    const startDateStr = start.toISOString().split('T')[0];
+    const endDateStr = end.toISOString().split('T')[0];
+
+    return { startDateStr, endDateStr };
+  };
+
   React.useEffect(() => {
     fetchPlayers();
   }, [fetchPlayers]);
@@ -63,20 +97,16 @@ export default function InjuryPredictionPage() {
         return;
       } else if (timeRange === "all") {
         // For all time, fetch all data without date filtering
+        console.log(`Fetching data for player ${selectedPlayerId} - All time`);
         fetchData(undefined, undefined, selectedPlayerId);
       } else {
         // For preset ranges, calculate dates and fetch immediately
-        const days = timeRange === "7d" ? 7 : timeRange === "14d" ? 14 : timeRange === "30d" ? 30 :
-                    timeRange === "90d" ? 90 : timeRange === "180d" ? 180 : timeRange === "365d" ? 365 : 30;
+        const { startDateStr, endDateStr } = calculateDateRange(timeRange);
+        console.log(`Fetching data for player ${selectedPlayerId} - Time range: ${timeRange}, Dates: ${startDateStr} to ${endDateStr}`);
 
-        const end = new Date();
-        const start = new Date();
-        start.setDate(start.getDate() - days);
-
-        const startDateStr = start.toISOString().split('T')[0];
-        const endDateStr = end.toISOString().split('T')[0];
-
-        fetchData(startDateStr, endDateStr, selectedPlayerId);
+        if (startDateStr && endDateStr) {
+          fetchData(startDateStr, endDateStr, selectedPlayerId);
+        }
       }
     }
   }, [fetchData, timeRange, selectedPlayerId]);
@@ -163,13 +193,11 @@ export default function InjuryPredictionPage() {
                     } else if (timeRange === "all") {
                       fetchData(undefined, undefined, selectedPlayerId);
                     } else {
-                      // Recalculate preset range
-                      const days = timeRange === "7d" ? 7 : timeRange === "14d" ? 14 : timeRange === "30d" ? 30 :
-                                  timeRange === "90d" ? 90 : timeRange === "180d" ? 180 : timeRange === "365d" ? 365 : 30;
-                      const end = new Date();
-                      const start = new Date();
-                      start.setDate(start.getDate() - days);
-                      fetchData(start.toISOString().split('T')[0], end.toISOString().split('T')[0], selectedPlayerId);
+                      // Use the same date calculation logic as the main effect
+                      const { startDateStr, endDateStr } = calculateDateRange(timeRange);
+                      if (startDateStr && endDateStr) {
+                        fetchData(startDateStr, endDateStr, selectedPlayerId);
+                      }
                     }
                   }
                 }}

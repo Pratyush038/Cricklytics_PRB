@@ -19,15 +19,22 @@ export interface FooterConfig {
 
 export const footerConfig: FooterConfig = {
   brand: {
-    title: "Vercel AI SDK",
-    description: "A template for building AI-powered applications."
+    title: "Cricklytics",
+    description: "Advanced cricket analytics platform powered by machine learning for data-driven insights and player performance analysis."
   },
   sections: [
     {
       title: "Platform",
       links: [
-        { href: "/chat", label: "Chat" },
-        { href: "/dashboard", label: "Voice Assistant" },
+        { href: "/player-analysis", label: "Player Analysis" },
+        { href: "/injury-prediction", label: "Injury Prediction" },
+      ]
+    },
+    {
+      title: "Resources",
+      links: [
+        { href: "#features", label: "Features" },
+        { href: "#how-it-works", label: "How It Works" },
       ]
     },
     {
@@ -38,5 +45,5 @@ export const footerConfig: FooterConfig = {
       ]
     }
   ],
-  copyright: `© ${new Date().getFullYear()} AI SDK Template. All rights reserved.`
+  copyright: `© ${new Date().getFullYear()} Cricklytics. All rights reserved.`
 }

@@ -16,6 +16,22 @@ export interface BattingAnalysisPlayer {
   "Predicted_Category": string;
 }
 
+export interface BatsmanPredictionRequest {
+  player: string;
+  mat: number;
+  runs: number;
+  sr: number;
+  avg: number;
+  fours: number;
+  sixes: number;
+  start_year: number;
+  end_year: number;
+}
+
+export interface BatsmanPredictionResponse {
+  predicted_category: string;
+}
+
 export interface NearestPlayer {
   player: string;
   avg: number;
@@ -35,6 +51,37 @@ export class BattingAnalysisService {
     'MM Ali', 'SPD Smith', 'M Labuschagne', 'TM Head', 'AT Carey',
     'DJ Malan', 'JM Bairstow', 'JE Root', 'JM Vince', 'SW Billings'
   ];
+
+  /**
+   * Get actual batting prediction from backend ML model
+   */
+  static async getBattingPrediction(batsmanData: BatsmanPredictionRequest): Promise<string> {
+    try {
+      console.log('Calling backend for batting prediction:', batsmanData);
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/predict/batsman`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          player_data: batsmanData
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Backend API error: ${response.status}`);
+      }
+
+      const result: BatsmanPredictionResponse = await response.json();
+      console.log('Batting prediction result:', result);
+
+      return result.predicted_category;
+    } catch (error) {
+      console.error('Error getting batting prediction:', error);
+      throw new Error(`Failed to get batting prediction: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
 
   static async fetchNearestPlayers(
     currentPlayerAvg: number,

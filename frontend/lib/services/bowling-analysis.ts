@@ -14,6 +14,20 @@ export interface BowlingAnalysisPlayer {
   "Predicted_Category": string;
 }
 
+export interface BowlerPredictionRequest {
+  player: string;
+  mat: number;
+  wickets: number;
+  econ: number;
+  sr: number;
+  start_year: number;
+  end_year: number;
+}
+
+export interface BowlerPredictionResponse {
+  predicted_category: string;
+}
+
 export interface NearestBowler {
   player: string;
   wickets: number;
@@ -33,10 +47,43 @@ export class BowlingAnalysisService {
     'BA Stokes', 'MM Ali', 'AU Rashid', 'DJ Willey', 'TK Curran'
   ];
 
+  /**
+   * Get actual bowling prediction from backend ML model
+   */
+  static async getBowlingPrediction(bowlerData: BowlerPredictionRequest): Promise<string> {
+    try {
+      console.log('Calling backend for bowling prediction:', bowlerData);
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/predict/bowler`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          player_data: bowlerData
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Backend API error: ${response.status}`);
+      }
+
+      const result: BowlerPredictionResponse = await response.json();
+      console.log('Bowling prediction result:', result);
+
+      return result.predicted_category;
+    } catch (error) {
+      console.error('Error getting bowling prediction:', error);
+      throw new Error(`Failed to get bowling prediction: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+
   static async fetchNearestBowlers(
     currentPlayerWickets: number,
     currentPlayerEcon: number,
     currentPlayerSr: number,
+    currentPlayerMat?: number,
+    currentPlayerCareerLength?: number,
     limit: number = 20
   ): Promise<NearestBowler[]> {
     try {
@@ -47,7 +94,7 @@ export class BowlingAnalysisService {
         console.warn('Supabase environment variables not found, using fallback sample data');
         // Use fallback data if no real data available
         const workingData = this.getFallbackBowlingData();
-        return this.processBowlingData(workingData, currentPlayerWickets, currentPlayerEcon, currentPlayerSr, limit);
+        return this.processBowlingData(workingData, currentPlayerWickets, currentPlayerEcon, currentPlayerSr, limit, currentPlayerMat, currentPlayerCareerLength);
       }
 
       // First, let's check how many total records we have
@@ -82,12 +129,12 @@ export class BowlingAnalysisService {
         workingData = this.getFallbackBowlingData();
       }
 
-      return this.processBowlingData(workingData, currentPlayerWickets, currentPlayerEcon, currentPlayerSr, limit);
+      return this.processBowlingData(workingData, currentPlayerWickets, currentPlayerEcon, currentPlayerSr, limit, currentPlayerMat, currentPlayerCareerLength);
     } catch (error) {
       console.error("Error in fetchNearestBowlers:", error);
       // If database fails, use fallback data
       const workingData = this.getFallbackBowlingData();
-      return this.processBowlingData(workingData, currentPlayerWickets, currentPlayerEcon, currentPlayerSr, limit);
+      return this.processBowlingData(workingData, currentPlayerWickets, currentPlayerEcon, currentPlayerSr, limit, currentPlayerMat, currentPlayerCareerLength);
     }
   }
 
@@ -104,7 +151,7 @@ export class BowlingAnalysisService {
         start_year: 2013,
         end_year: 2023,
         career_length: 11,
-        "Predicted_Category": 'Death Bowler'
+        "Predicted_Category": 'Death Overs Specialist'
       },
       {
         id: 2,
@@ -117,7 +164,7 @@ export class BowlingAnalysisService {
         start_year: 2010,
         end_year: 2023,
         career_length: 14,
-        "Predicted_Category": 'Spin Specialist'
+        "Predicted_Category": 'Elite Economist'
       },
       {
         id: 3,
@@ -130,7 +177,7 @@ export class BowlingAnalysisService {
         start_year: 2009,
         end_year: 2023,
         career_length: 15,
-        "Predicted_Category": 'All Rounder'
+        "Predicted_Category": 'Wicket Taker'
       },
       {
         id: 4,
@@ -143,7 +190,7 @@ export class BowlingAnalysisService {
         start_year: 2012,
         end_year: 2023,
         career_length: 12,
-        "Predicted_Category": 'Swing Bowler'
+        "Predicted_Category": 'Swing Specialist'
       },
       {
         id: 5,
@@ -156,7 +203,7 @@ export class BowlingAnalysisService {
         start_year: 2013,
         end_year: 2023,
         career_length: 11,
-        "Predicted_Category": 'Death Bowler'
+        "Predicted_Category": 'Power Play Specialist'
       }
     ];
   }
@@ -166,7 +213,9 @@ export class BowlingAnalysisService {
     currentPlayerWickets: number,
     currentPlayerEcon: number,
     currentPlayerSr: number,
-    limit: number
+    limit: number,
+    currentPlayerMat?: number,
+    currentPlayerCareerLength?: number
   ): NearestBowler[] {
     // Calculate Euclidean distance for each bowler from current player
     const bowlersWithDistance = data
@@ -175,16 +224,29 @@ export class BowlingAnalysisService {
         player.wickets !== null &&
         player.econ !== null &&
         player.sr !== null &&
+        player.mat !== null &&
+        player.career_length !== null &&
         !isNaN(player.wickets) &&
         !isNaN(player.econ) &&
-        !isNaN(player.sr)
+        !isNaN(player.sr) &&
+        !isNaN(player.mat) &&
+        !isNaN(player.career_length)
       )
       .map((player: BowlingAnalysisPlayer) => {
-        // Calculate Euclidean distance: sqrt((wickets_diff)^2 + (econ_diff)^2 + (sr_diff)^2)
+        // Calculate Euclidean distance using same features as backend model: mat, wickets, econ, sr, career_length
         const wicketsDiff = player.wickets - currentPlayerWickets;
         const econDiff = player.econ - currentPlayerEcon;
         const srDiff = player.sr - currentPlayerSr;
-        const distance = Math.sqrt(wicketsDiff * wicketsDiff + econDiff * econDiff + srDiff * srDiff);
+        const matDiff = player.mat - (currentPlayerMat || 0);
+        const careerLengthDiff = player.career_length - (currentPlayerCareerLength || 0);
+
+        const distance = Math.sqrt(
+          wicketsDiff * wicketsDiff +
+          econDiff * econDiff +
+          srDiff * srDiff +
+          matDiff * matDiff +
+          careerLengthDiff * careerLengthDiff
+        );
 
         // Boost score for famous bowlers (lower "distance" for famous bowlers)
         const isFamous = this.FAMOUS_BOWLERS.some(famous =>

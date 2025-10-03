@@ -9,6 +9,7 @@ import {
   Legend,
   ScatterController,
   CategoryScale,
+  ScriptableChartContext,
 } from 'chart.js';
 import { Scatter } from 'react-chartjs-2';
 import { BattingAnalysisService, NearestPlayer } from "../../lib/services/batting-analysis";
@@ -49,18 +50,32 @@ export function ScatterPlotChart({
             x: d.avg,
             y: d.sr,
             player: d.player,
+            avg: d.avg,
             sr: d.sr,
             runs: d.runs,
             mat: d.mat,
             distance: d.distance,
           })),
-        backgroundColor: 'hsl(var(--chart-2))', // Use theme chart color
-        borderColor: 'hsl(var(--chart-2))',
-        borderWidth: 1,
-        pointRadius: 6,
-        pointHoverRadius: 8,
-        pointBorderWidth: 1,
-        pointBorderColor: 'hsl(var(--background))',
+        backgroundColor: [
+          'hsl(142, 71%, 45%)', // Emerald-500 - matches Cricklytics theme
+          'hsl(142, 71%, 55%)', // Emerald-400 - fallback for dark theme
+        ],
+        borderColor: [
+          'hsl(142, 71%, 45%)', // Emerald-500
+          'hsl(142, 71%, 55%)', // Emerald-400
+        ],
+        borderWidth: 3,
+        pointRadius: 9,
+        pointHoverRadius: 12,
+        pointBorderWidth: 3,
+        pointBorderColor: [
+          'hsl(var(--background))',
+          'hsl(var(--background))',
+        ],
+        pointBackgroundColor: [
+          'hsl(142, 71%, 45%)',
+          'hsl(142, 71%, 55%)',
+        ],
       },
       {
         label: currentPlayerName,
@@ -76,13 +91,26 @@ export function ScatterPlotChart({
             distance: 0,
           }
         ],
-        backgroundColor: 'hsl(var(--primary))', // Use theme primary color
-        borderColor: 'hsl(var(--primary))',
-        borderWidth: 2,
-        pointRadius: 10,
-        pointHoverRadius: 12,
-        pointBorderWidth: 2,
-        pointBorderColor: 'hsl(var(--background))',
+        backgroundColor: [
+          'hsl(180, 84%, 45%)', // Teal-500 - complements emerald theme
+          'hsl(180, 84%, 55%)', // Teal-400 - fallback for dark theme
+        ],
+        borderColor: [
+          'hsl(180, 84%, 45%)', // Teal-500
+          'hsl(180, 84%, 55%)', // Teal-400
+        ],
+        borderWidth: 4,
+        pointRadius: 16,
+        pointHoverRadius: 20,
+        pointBorderWidth: 4,
+        pointBorderColor: [
+          'hsl(var(--background))',
+          'hsl(var(--background))',
+        ],
+        pointBackgroundColor: [
+          'hsl(180, 84%, 45%)',
+          'hsl(180, 84%, 55%)',
+        ],
       },
     ],
   };
@@ -95,22 +123,31 @@ export function ScatterPlotChart({
         position: 'top' as const,
         labels: {
           usePointStyle: true,
-          padding: 16,
+          padding: 20,
           font: {
-            size: 13,
+            size: 14,
+            weight: 600 as const,
             family: 'Inter, system-ui, sans-serif',
-            color: 'hsl(var(--muted-foreground))',
           },
+          color: function(context: ScriptableChartContext) {
+            // Detect dark mode and return appropriate color
+            const isDark = document.documentElement.classList.contains('dark') ||
+                          window.getComputedStyle(document.documentElement).getPropertyValue('--background').includes('4.9');
+            return isDark ? '#ffffff' : '#000000';
+          } as any,
         },
       },
       tooltip: {
-        backgroundColor: 'hsl(var(--popover))',
-        titleColor: 'hsl(var(--popover-foreground))',
-        bodyColor: 'hsl(var(--popover-foreground))',
-        borderColor: 'hsl(var(--border))',
+        enabled: true,
+        backgroundColor: 'rgba(0, 0, 0, 0.9)',
+        titleColor: '#ffffff',
+        bodyColor: '#ffffff',
+        borderColor: 'rgba(255, 255, 255, 0.3)',
         borderWidth: 1,
-        cornerRadius: 8,
+        cornerRadius: 12,
         displayColors: false,
+        padding: 16,
+        position: 'nearest' as const,
         callbacks: {
           title: (context: any) => {
             return context[0].raw.player || 'Unknown Player';
@@ -133,22 +170,44 @@ export function ScatterPlotChart({
           display: true,
           text: 'Batting Average',
           font: {
-            size: 14,
-            weight: 500,
+            size: 16,
+            weight: 600 as const,
             family: 'Inter, system-ui, sans-serif',
           },
-          color: 'hsl(var(--foreground))',
+          color: function(context: ScriptableChartContext) {
+            // Detect dark mode and return appropriate color
+            const isDark = document.documentElement.classList.contains('dark') ||
+                          window.getComputedStyle(document.documentElement).getPropertyValue('--background').includes('4.9');
+            return isDark ? '#ffffff' : '#000000';
+          } as any,
         },
         grid: {
-          color: 'hsl(var(--muted))',
-          borderColor: 'hsl(var(--border))',
+          color: function(context: ScriptableChartContext) {
+            // Detect dark mode and return appropriate color
+            const isDark = document.documentElement.classList.contains('dark') ||
+                          window.getComputedStyle(document.documentElement).getPropertyValue('--background').includes('4.9');
+            return isDark ? 'rgba(156, 163, 175, 0.25)' : 'rgba(107, 114, 128, 0.15)';
+          } as any,
+          borderColor: function(context: ScriptableChartContext) {
+            // Detect dark mode and return appropriate color
+            const isDark = document.documentElement.classList.contains('dark') ||
+                          window.getComputedStyle(document.documentElement).getPropertyValue('--background').includes('4.9');
+            return isDark ? 'rgba(156, 163, 175, 0.5)' : 'rgba(107, 114, 128, 0.6)';
+          } as any,
+          lineWidth: 2,
         },
         ticks: {
           font: {
-            size: 11,
+            size: 13,
             family: 'Inter, system-ui, sans-serif',
           },
-          color: 'hsl(var(--muted-foreground))',
+          color: function(context: ScriptableChartContext) {
+            // Detect dark mode and return appropriate color
+            const isDark = document.documentElement.classList.contains('dark') ||
+                          window.getComputedStyle(document.documentElement).getPropertyValue('--background').includes('4.9');
+            return isDark ? '#ffffff' : '#000000';
+          } as any,
+          padding: 8,
         },
       },
       y: {
@@ -156,39 +215,57 @@ export function ScatterPlotChart({
           display: true,
           text: 'Strike Rate',
           font: {
-            size: 14,
-            weight: 500,
+            size: 16,
+            weight: 600 as const,
             family: 'Inter, system-ui, sans-serif',
           },
-          color: 'hsl(var(--foreground))',
+          color: function(context: ScriptableChartContext) {
+            // Detect dark mode and return appropriate color
+            const isDark = document.documentElement.classList.contains('dark') ||
+                          window.getComputedStyle(document.documentElement).getPropertyValue('--background').includes('4.9');
+            return isDark ? '#ffffff' : '#000000';
+          } as any,
         },
         grid: {
-          color: 'hsl(var(--muted))',
-          borderColor: 'hsl(var(--border))',
+          color: function(context: ScriptableChartContext) {
+            // Detect dark mode and return appropriate color
+            const isDark = document.documentElement.classList.contains('dark') ||
+                          window.getComputedStyle(document.documentElement).getPropertyValue('--background').includes('4.9');
+            return isDark ? 'rgba(156, 163, 175, 0.25)' : 'rgba(107, 114, 128, 0.15)';
+          } as any,
+          borderColor: function(context: ScriptableChartContext) {
+            // Detect dark mode and return appropriate color
+            const isDark = document.documentElement.classList.contains('dark') ||
+                          window.getComputedStyle(document.documentElement).getPropertyValue('--background').includes('4.9');
+            return isDark ? 'rgba(156, 163, 175, 0.5)' : 'rgba(107, 114, 128, 0.6)';
+          } as any,
+          lineWidth: 2,
         },
         ticks: {
           font: {
-            size: 11,
+            size: 13,
             family: 'Inter, system-ui, sans-serif',
           },
-          color: 'hsl(var(--muted-foreground))',
+          color: function(context: ScriptableChartContext) {
+            // Detect dark mode and return appropriate color
+            const isDark = document.documentElement.classList.contains('dark') ||
+                          window.getComputedStyle(document.documentElement).getPropertyValue('--background').includes('4.9');
+            return isDark ? '#ffffff' : '#000000';
+          } as any,
+          padding: 8,
         },
       },
     },
     elements: {
       point: {
-        borderWidth: 1,
-        hoverBorderWidth: 2,
+        borderWidth: 2,
+        hoverBorderWidth: 3,
       },
-    },
-    animation: {
-      duration: 800,
-      easing: 'easeOutQuart' as const,
     },
   };
 
   return (
-    <div className={`w-full h-[500px] ${className}`}>
+    <div className={`w-full h-[600px] ${className}`}>
       <Scatter data={chartData} options={options} />
     </div>
   );

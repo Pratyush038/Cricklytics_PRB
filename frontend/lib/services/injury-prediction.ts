@@ -40,6 +40,7 @@ export class InjuryPredictionService {
 
       // Apply date filter if specified
       if (startDate && endDate) {
+        console.log(`Filtering data from ${startDate} to ${endDate} for player ${playerId || 'all'}`);
         query = query
           .gte("start_date", startDate)
           .lte("start_date", endDate);
@@ -61,6 +62,13 @@ export class InjuryPredictionService {
         throw new Error(`Failed to fetch data: ${error.message}`);
       }
 
+      console.log(`Found ${data?.length || 0} raw records`);
+      console.log(`Sample records:`, (data || []).slice(0, 3).map(item => ({
+        date: item.start_date,
+        workload: item.workload_score,
+        injury: item.injury
+      })));
+
       // Transform the data to match chart format
       const chartData: ChartDataPoint[] = (data || [])
         .filter((item: InjuryPredictionData) =>
@@ -76,6 +84,11 @@ export class InjuryPredictionService {
           player_name: item.player_name || undefined,
           format: item.format || undefined,
         }));
+
+      console.log(`Filtered to ${chartData.length} valid chart data points`);
+      if (chartData.length > 0) {
+        console.log(`Date range in results: ${chartData[0].date} to ${chartData[chartData.length - 1].date}`);
+      }
 
       return chartData;
     } catch (error) {
