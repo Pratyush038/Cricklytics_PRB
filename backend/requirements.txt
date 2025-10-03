@@ -1,0 +1,7 @@
+numpy
+pandas
+matplotlib
+requests
+beautifulsoup4
+simplejson
+scikit-learn
