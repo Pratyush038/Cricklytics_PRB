@@ -6,3 +6,4 @@ beautifulsoup4
 simplejson
 scikit-learn
 uvicorn
+fastapi
