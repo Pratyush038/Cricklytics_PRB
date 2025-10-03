@@ -62,16 +62,16 @@ const PlayerAnalysisForm: React.FC = () => {
           runs: 1500,
           sr: 135.00,
           avg: 35.00,
-          fours: 0,
-          sixes: 0,
+          fours: 35,
+          sixes: 15,
           wickets: undefined,
           econ: undefined,
         }
       : {
           ...localFormState,
           wickets: 75,
-          econ: 4.50,
-          sr: 20.00,
+          econ: 6.75,
+          sr: 24.00,
           runs: undefined,
           avg: undefined,
           fours: undefined,
@@ -129,22 +129,22 @@ const PlayerAnalysisForm: React.FC = () => {
   const handleClear = () => {
     const newState = activeTab === 'batsman' 
       ? {
-          player: '',
+          player: 'Batsman',
           mat: 50,
           runs: 1500,
           sr: 135.00,
           avg: 35.00,
-          fours: 0,
-          sixes: 0,
+          fours: 35,
+          sixes: 15,
           start_year: 2010,
           end_year: 2025
         }
       : {
-          player: '',
+          player: 'Bowler',
           mat: 50,
           wickets: 75,
-          econ: 4.50,
-          sr: 20.00,
+          econ: 6.75,
+          sr: 24.00,
           start_year: 2010,
           end_year: 2025
         };
