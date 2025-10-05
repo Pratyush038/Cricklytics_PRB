@@ -17,28 +17,16 @@ function PureSuggestedActions({
 }: SuggestedActionsProps) {
   const suggestedActions = [
     {
-      title: "Analyze Heart Rate Trends",
-      label: "Analyze and visualize my heart rate over the past 6 months",
+      title: "Top Batsmen Comparison",
+      label: "Compare top 5 T20 batsmen",
       action:
-        "Plot my average heart rate over the past few months please use efficent queries since theres a lot of data, I want month wise averages. Also provide insights about heart rate conditions and health metrics.",
+        "Fetch the top 5 batsmen from the database and plot a bar chart comparing their total runs. Include insights about the players using their strike rate, batting average, and number of matches.",
     },
     {
-      title: "Analyze Medical Records",
-      label: "Review recent medical records",
+      title: "Player Injury Timeline",
+      label: "Visualize Jasprit Bumrah’s injuries",
       action:
-        "Analyze the latest medical records data and provide insights about medical conditions and health metrics.",
-    },
-    {
-      title: "Visually Analyze Sensor Data",
-      label: "Compare heart rate and blood pressure data",
-      action:
-        "Compare recent heart rate and blood pressure data to identify patterns and correlations.",
-    },
-    {
-      title: "Analyze nutrition logs",
-      label: "Analyze nutrition logs",
-      action:
-        "Analyze historical nutrition data to identify trends and patterns over time.",
+        "Visualize Jasprit Bumrah’s complete injury history from the database as a timeline. Use web search to provide context or likely reasons for each injury and highlight any observable patterns.",
     },
   ];
   return (

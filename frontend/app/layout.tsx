@@ -9,7 +9,7 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
   title: 'Cricklytics',
-  description: 'AI-Powered Cricket Analytics and Injury Prediction',
+  description: 'AI-Powered Cricket Analytics and Workload based Injury Prediction'
 };
 
 export default function RootLayout({

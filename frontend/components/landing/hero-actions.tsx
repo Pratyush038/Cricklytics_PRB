@@ -36,6 +36,21 @@ export function HeroActions() {
           </div>
         </Link>
       </BlurFade>
+      <BlurFade delay={1.25} inView>
+        <Link href="#features">
+          <div>
+            <ShimmerButton
+              className="flex items-center gap-2 px-6 py-3 text-base sm:text-lg"
+              background="linear-gradient(to right,rgb(93, 208, 202),rgb(44, 72, 132))"
+            >
+              <span className="whitespace-pre-wrap text-center font-medium leading-none tracking-tight text-white">
+                View Demo
+              </span>
+              <BarChart3 className="w-4 h-4 transition-transform group-hover:translate-x-1 sm:w-5 sm:h-5" />
+            </ShimmerButton>
+          </div>
+        </Link>
+      </BlurFade>
     </div>
   )
 }

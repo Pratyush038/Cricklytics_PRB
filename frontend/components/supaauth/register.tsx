@@ -31,7 +31,7 @@ export default function Register() {
           />
           <h2 className="text-2xl lg:text-3xl font-bold text-white">{appName}</h2>
           <p className="text-indigo-100 max-w-sm mx-auto lg:mx-0 text-sm lg:text-base">
-            Join our community and experience the next generation of web applications.
+            Join our community and experience the next generation of AI-Powered Cricket Analytics.
           </p>
         </div>
         <div className="relative z-10 hidden lg:block">
