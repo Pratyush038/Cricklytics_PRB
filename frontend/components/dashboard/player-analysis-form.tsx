@@ -40,14 +40,14 @@ const PlayerAnalysisForm: React.FC = () => {
   
   const initialFormState: FormState = {
     player: '',
-    mat: 45,
-    runs: 1500,
-    sr: 135.00,
-    avg: 40.00,
-    fours: 35,
-    sixes: 15,
-    start_year: 2020,
-    end_year: 2025
+    mat: 351,
+    runs: 11448,
+    sr: 143.92,
+    avg: 36.92,
+    fours: 866,
+    sixes: 839,
+    start_year: 2007,
+    end_year: 2022
   };
   
   const [submittedState, setSubmittedState] = useState<FormState>(initialFormState);
@@ -59,19 +59,19 @@ const PlayerAnalysisForm: React.FC = () => {
     const newState = value === 'batsman' 
       ? {
           ...localFormState,
-          runs: 1500,
-          sr: 135.00,
-          avg: 35.00,
-          fours: 35,
-          sixes: 15,
+          runs: 11448,
+          sr: 143.92,
+          avg: 36.92,
+          fours: 866,
+          sixes: 839,
           wickets: undefined,
           econ: undefined,
         }
       : {
           ...localFormState,
-          wickets: 75,
-          econ: 6.75,
-          sr: 24.00,
+          wickets: 465,
+          econ: 6.13,
+          sr: 21.70,
           runs: undefined,
           avg: undefined,
           fours: undefined,
@@ -129,23 +129,23 @@ const PlayerAnalysisForm: React.FC = () => {
   const handleClear = () => {
     const newState = activeTab === 'batsman' 
       ? {
-          player: 'Batsman',
-          mat: 50,
-          runs: 1500,
-          sr: 135.00,
-          avg: 35.00,
-          fours: 35,
-          sixes: 15,
-          start_year: 2010,
-          end_year: 2025
+          player: 'Chris Gayle',
+          mat: 351,
+          runs: 11448,
+          sr: 143.92,
+          avg: 36.92,
+          fours: 866,
+          sixes: 839,
+          start_year: 2007,
+          end_year: 2022
         }
       : {
-          player: 'Bowler',
-          mat: 50,
-          wickets: 75,
-          econ: 6.75,
-          sr: 24.00,
-          start_year: 2010,
+          player: 'Sunil Narine',
+          mat: 433,
+          wickets: 465,
+          econ: 6.13,
+          sr: 21.70,
+          start_year: 2011,
           end_year: 2025
         };
     
