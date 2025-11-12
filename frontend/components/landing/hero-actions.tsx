@@ -37,7 +37,7 @@ export function HeroActions() {
         </Link>
       </BlurFade>
       <BlurFade delay={1.25} inView>
-        <Link href="#features">
+        <a href="https://youtu.be/rUxyGWlXv94" target="_blank" rel="noopener noreferrer">
           <div>
             <ShimmerButton
               className="flex items-center gap-2 px-6 py-3 text-base sm:text-lg"
@@ -49,7 +49,7 @@ export function HeroActions() {
               <BarChart3 className="w-4 h-4 transition-transform group-hover:translate-x-1 sm:w-5 sm:h-5" />
             </ShimmerButton>
           </div>
-        </Link>
+        </a>
       </BlurFade>
     </div>
   )
