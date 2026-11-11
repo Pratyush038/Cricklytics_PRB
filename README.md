@@ -1,5 +1,5 @@
 # Cricklytics  
-### Player Role Classification & Workload-Based Injury Analytics Platform
+### Player Role Classification & Workload-Based Injury Analytics Platform 
 
 Cricklytics is a data-driven cricket analytics system integrating probabilistic player role classification with longitudinal workload modeling to support objective scouting and injury risk analysis.
 
